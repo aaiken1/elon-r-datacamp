@@ -1,0 +1,63 @@
+---
+title: "Lab 1 Solution"
+author: Adam Aiken
+date: 2/17/20
+output: 
+  html_notebook: 
+    fig_width: 5
+    theme: flatly
+---
+
+```{r set-up, echo=TRUE, message=FALSE}
+library(tidyverse) 
+library(here)
+uw <- read_csv(here::here("data", "zestimatesAndCutoffs_byGeo_uw_2017-10-10_forDataPage.csv"))
+```
+
+# Questions 1 and 2
+```{r q1-2, message=FALSE}
+uw %>% filter(RegionType == "MSA") %>%
+  ggplot(aes(x = UWHomes_Tier1, y = UWHomes_TotalValue_Tier1)) + 
+  geom_point() + 
+  geom_smooth(method=lm) +
+  labs(x = "Number of Tier 1 Underwater Homes", y = "Total Dollar Value", title = "Tier 1 Underwater Homes by MSA")
+```
+
+# Question 4
+```{r q4, message=FALSE}
+uw %>% filter(RegionType == "MSA") %>%
+ggplot(aes(y = UWHomes_Tier1, x = StateName )) + 
+  geom_boxplot() +
+  labs(x = "State", y = "Distribution of Tier 1 Underwater Homes", title = "Tier 1 Underwater Homes by State") +
+  coord_flip() 
+```
+
+# Question 5
+```{r q5, message=FALSE}
+uw %>% filter(RegionType == "MSA" & UWHomes_Tier3 < 30000) %>%
+ggplot(aes(y = UWHomes_Tier3, x = StateName )) + 
+ geom_boxplot() +
+  geom_jitter(width = 0.2) +
+  labs(x = "State", y = "Distribution of Tier 3 Underwater Homes", title = "Tier 3 Underwater Homes by State") +
+  coord_flip() 
+```
+
+# Question 6
+```{r q6, message=FALSE}
+uw %>% filter(RegionType == "MSA") %>%
+ggplot(aes(x = UWHomes_Tier3)) +
+  geom_histogram(binwidth = 5000) +
+  labs(x = "Number of Tier 3 Underwater Homes", y = "Count by MSA", title = "Tier 3 Underwater Homes by MSA")
+```
+
+# Question 7
+```{r q7, out.width='65%', message=FALSE}
+states <- c("California", "New Jersey")
+class(states)
+uw %>% filter(StateName %in% states) %>%
+  filter(RegionType == "MSA") %>%
+  ggplot() +
+    geom_density(aes(x = UWHomes_Tier3, fill = StateName), alpha = 0.25) +
+    scale_fill_manual(values = c("#999999", "#E69F00")) +
+    labs(x = "Number of Tier 3 Underwater Homes", y = "Density", title = "Tier 3 Underwater Homes by MSA Across CA and NJ")
+```
